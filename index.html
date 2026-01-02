@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KidVEO Pro - AI Prompt Engineering Studio</title>
+    <!-- Tailwind CSS for Styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons for Premium UI -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #FF8BA7;
+            --primary-dark: #FF6B8D;
+            --bg-soft: #FDF9F8;
+        }
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: var(--bg-soft);
+            color: #33272A;
+        }
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 139, 167, 0.1);
+        }
+        .btn-gradient {
+            background: linear-gradient(135deg, #FF9A9E 0%, #FAD0C4 100%);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .btn-gradient:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px -10px rgba(255, 139, 167, 0.5);
+        }
+        .card-pro {
+            background: white;
+            border-radius: 24px;
+            border: 1px solid rgba(255, 139, 167, 0.1);
+            box-shadow: 0 4px 20px -5px rgba(0, 0, 0, 0.05);
+        }
+        .input-pro {
+            background: #F8F8F8;
+            border: 2px solid transparent;
+            border-radius: 16px;
+            padding: 12px 16px;
+            transition: all 0.2s;
+            outline: none;
+        }
+        .input-pro:focus {
+            border-color: var(--primary);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(255, 139, 167, 0.1);
+        }
+        .loader-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .hidden { display: none; }
+        .fade-in { animation: fadeIn 0.5s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Navigation -->
+    <nav class="glass-nav sticky top-0 z-50 py-4 px-6">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="bg-pink-500 p-2.5 rounded-2xl text-white shadow-lg">
+                    <i data-lucide="video" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-extrabold tracking-tight">KidVEO <span class="text-pink-500">PRO</span></h1>
+                    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-none">Veo 3 Engineering Studio</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-4">
+                <button id="langBtn" class="px-4 py-2 bg-white border border-pink-100 rounded-full text-xs font-bold hover:bg-pink-50 transition">
+                    🇮🇩 ID
+                </button>
+                <button id="adminBtn" class="p-2.5 bg-gray-50 rounded-xl hover:bg-pink-50 transition border border-gray-100 text-gray-400 hover:text-pink-500">
+                    <i data-lucide="settings" class="w-5 h-5"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-6 py-10 grid grid-cols-1 lg:grid-cols-12 gap-10">
+        
+        <!-- Sidebar: Configuration -->
+        <aside class="lg:col-span-4 space-y-6">
+            <div class="card-pro p-8">
+                <h3 class="text-lg font-extrabold flex items-center gap-2 mb-8">
+                    <i data-lucide="sliders-horizontal" class="w-5 h-5 text-pink-500"></i>
+                    Sutradara AI
+                </h3>
+
+                <div class="space-y-6">
+                    <div>
+                        <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-2">Profesi Anak</label>
+                        <input type="text" id="profession" placeholder="Contoh: Dokter Hewan, Koki..." class="w-full input-pro font-semibold text-gray-700">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-2">Durasi</label>
+                            <select id="duration" class="w-full input-pro text-sm font-bold">
+                                <option value="30s">30 Detik</option>
+                                <option value="60s" selected>60 Detik</option>
+                                <option value="120s">120 Detik</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-2">Scene</label>
+                            <select id="scenes" class="w-full input-pro text-sm font-bold">
+                                <option value="3">3 Scene</option>
+                                <option value="4" selected>4 Scene</option>
+                                <option value="6">6 Scene</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-2">Gaya Visual</label>
+                        <select id="style" class="w-full input-pro text-sm font-bold">
+                            <option value="3D Pixar Style, subsurface scattering, cinematic lighting">3D Pixar Style</option>
+                            <option value="2D Studio Ghibli, hand-painted textures, soft aesthetic">Studio Ghibli</option>
+                            <option value="Tactile Claymation, stop-motion textures, realistic felt">Claymation</option>
+                            <option value="Chibi Anime, high-key lighting, vibrant colors">Chibi Anime</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-2">Mood Musik</label>
+                        <select id="music" class="w-full input-pro text-sm font-bold">
+                            <option value="Happy & Whimsical">Ceria (Happy)</option>
+                            <option value="Calm & Lullaby">Tenang (Calm)</option>
+                            <option value="Epic & Adventurous">Petualangan (Epic)</option>
+                        </select>
+                    </div>
+
+                    <div class="pt-6 border-t border-gray-100">
+                        <button id="generateBtn" class="w-full btn-gradient py-5 rounded-2xl text-white font-extrabold shadow-lg flex items-center justify-center gap-3">
+                            <i data-lucide="sparkles" class="w-5 h-5"></i>
+                            GENERATE PROMPTS
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="p-6 bg-pink-50 rounded-3xl border border-pink-100">
+                <h4 class="text-xs font-bold text-pink-600 mb-2 flex items-center gap-2">
+                    <i data-lucide="info" class="w-4 h-4"></i>
+                    VEO 3 OPTIMIZED
+                </h4>
+                <p class="text-[11px] text-pink-400 leading-relaxed font-medium italic">
+                    Prompt yang dihasilkan dirancang khusus untuk memicu fitur teknis Google Veo 3 seperti konsistensi karakter dan pencahayaan volumetrik.
+                </p>
+            </div>
+        </aside>
+
+        <!-- Main Content: Results -->
+        <section class="lg:col-span-8">
+            <!-- Empty State -->
+            <div id="emptyState" class="card-pro border-4 border-dashed border-gray-100 h-[600px] flex flex-col items-center justify-center text-center p-12">
+                <div class="w-24 h-24 bg-pink-50 rounded-full flex items-center justify-center mb-6 text-pink-300">
+                    <i data-lucide="clapperboard" class="w-12 h-12"></i>
+                </div>
+                <h2 class="text-2xl font-extrabold text-gray-800 mb-2">Studio Anda Kosong</h2>
+                <p class="text-gray-400 max-w-sm font-medium">Isi detail profesi di samping untuk memulainya. Pastikan API Key sudah terpasang.</p>
+            </div>
+
+            <!-- Loading State -->
+            <div id="loadingState" class="hidden h-[600px] flex flex-col items-center justify-center space-y-6">
+                <div class="loader-spinner"></div>
+                <div class="text-center">
+                    <h3 class="text-lg font-bold text-gray-800">Menghubungi Pusat Data Gemini...</h3>
+                    <p class="text-sm text-gray-400 font-medium">Merancang skenario berkualitas sinematik untuk Anda.</p>
+                </div>
+            </div>
+
+            <!-- Result List -->
+            <div id="resultContainer" class="hidden space-y-8 fade-in">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h2 id="resultTitle" class="text-3xl font-extrabold text-gray-800 tracking-tight">Storyboard</h2>
+                        <p class="text-[10px] font-bold text-pink-400 uppercase tracking-widest mt-1">Salin prompt per scene untuk hasil terbaik</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button id="copyAllBtn" class="px-5 py-2.5 bg-gray-900 text-white rounded-xl text-xs font-bold hover:bg-black transition flex items-center gap-2">
+                            <i data-lucide="copy" class="w-4 h-4"></i> SALIN SEMUA
+                        </button>
+                    </div>
+                </div>
+
+                <div id="sceneList" class="space-y-8">
+                    <!-- Scenes injected here -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal: Settings -->
+    <div id="adminModal" class="hidden fixed inset-0 z-[60] flex items-center justify-center p-6">
+        <div class="absolute inset-0 bg-gray-900/60 backdrop-blur-md" id="modalOverlay"></div>
+        <div class="relative bg-white w-full max-w-md rounded-[40px] p-10 shadow-2xl scale-100 transition-transform">
+            <h2 class="text-2xl font-black text-gray-800 mb-2">Konfigurasi API</h2>
+            <p class="text-sm text-gray-400 font-medium mb-8">Masukkan Google Gemini API Key. Kami tidak menyimpan data ini di server kami.</p>
+            
+            <div class="space-y-6">
+                <div>
+                    <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-3">Gemini API Key</label>
+                    <input type="password" id="apiKeyInput" placeholder="AIzaSy..." class="w-full input-pro font-mono text-sm">
+                </div>
+                <div class="flex flex-col gap-3">
+                    <button id="saveApiBtn" class="w-full bg-gray-900 text-white font-black py-4 rounded-2xl hover:bg-black transition">SIMPAN</button>
+                    <a href="https://aistudio.google.com/" target="_blank" class="text-center text-[10px] font-black text-pink-500 hover:underline uppercase tracking-widest">Dapatkan API Key Gratis</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="hidden fixed bottom-10 left-1/2 -translate-x-1/2 z-[100] bg-gray-900 text-white px-8 py-4 rounded-full font-bold shadow-2xl flex items-center gap-3">
+        <div class="w-2 h-2 bg-pink-500 rounded-full animate-pulse"></div>
+        <span id="toastMsg">Teks disalin!</span>
+    </div>
+
+    <script>
+        // --- APP STATE ---
+        let state = {
+            lang: 'id',
+            apiKey: localStorage.getItem('gemini_api_key') || '',
+            isGenerating: false,
+            results: null
+        };
+
+        // --- DOM ELEMENTS ---
+        const elements = {
+            generateBtn: document.getElementById('generateBtn'),
+            profession: document.getElementById('profession'),
+            duration: document.getElementById('duration'),
+            scenes: document.getElementById('scenes'),
+            style: document.getElementById('style'),
+            music: document.getElementById('music'),
+            emptyState: document.getElementById('emptyState'),
+            loadingState: document.getElementById('loadingState'),
+            resultContainer: document.getElementById('resultContainer'),
+            sceneList: document.getElementById('sceneList'),
+            adminBtn: document.getElementById('adminBtn'),
+            adminModal: document.getElementById('adminModal'),
+            modalOverlay: document.getElementById('modalOverlay'),
+            saveApiBtn: document.getElementById('saveApiBtn'),
+            apiKeyInput: document.getElementById('apiKeyInput'),
+            langBtn: document.getElementById('langBtn'),
+            toast: document.getElementById('toast'),
+            toastMsg: document.getElementById('toastMsg'),
+            copyAllBtn: document.getElementById('copyAllBtn')
+        };
+
+        // Initialize Icons
+        lucide.createIcons();
+
+        // --- FUNCTIONS ---
+        const showToast = (msg) => {
+            elements.toastMsg.innerText = msg;
+            elements.toast.classList.remove('hidden');
+            setTimeout(() => elements.toast.classList.add('hidden'), 3000);
+        };
+
+        const toggleModal = (show) => {
+            elements.adminModal.classList.toggle('hidden', !show);
+            if (show) elements.apiKeyInput.value = state.apiKey;
+        };
+
+        const copyText = (text) => {
+            const el = document.createElement('textarea');
+            el.value = text;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+            showToast("Teks disalin ke papan klip!");
+        };
+
+        // --- API INTEGRATION ---
+        const generatePrompts = async () => {
+            if (!state.apiKey) {
+                toggleModal(true);
+                return showToast("Atur API Key terlebih dahulu!");
+            }
+            if (!elements.profession.value) return showToast("Masukkan nama profesi!");
+
+            state.isGenerating = true;
+            elements.generateBtn.disabled = true;
+            elements.emptyState.classList.add('hidden');
+            elements.resultContainer.classList.add('hidden');
+            elements.loadingState.classList.remove('hidden');
+
+            const sysPrompt = `You are a professional AI Cinema Director for Google Veo 3. 
+            Generate a detailed video storyboard for kids education.
+            
+            VEO 3 PARAMS:
+            - Texture: ${elements.style.value}
+            - Technicals: "volumetric lighting", "ray-tracing", "focal length 35mm", "detailed textures".
+            - Movement: "crane shot", "pan left", "dynamic focus".
+            - Character: Ensure consistent facial expressions.
+            
+            CONTEXT:
+            - Profession: ${elements.profession.value}
+            - Language: ${state.lang === 'id' ? 'Indonesian' : 'English'}
+            
+            JSON FORMAT (MANDATORY):
+            {
+                "scenes": [
+                    {
+                        "title": "Scene Name",
+                        "video_prompt": "Ultra detailed VEO 3 prompt...",
+                        "camera": "Technical movement detail",
+                        "audio": "Narration text",
+                        "bgm": "Musical cue"
+                    }
+                ]
+            }`;
+
+            const userPrompt = `Create a ${elements.scenes.value} scene animation storyboard about ${elements.profession.value}. Total duration ${elements.duration.value}. Music mood: ${elements.music.value}. The last scene should be the character smiling and waving to create a loop-safe video.`;
+
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${state.apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: userPrompt }] }],
+                        systemInstruction: { parts: [{ text: sysPrompt }] },
+                        generationConfig: { responseMimeType: "application/json" }
+                    })
+                });
+
+                if (!response.ok) throw new Error("API Limit atau Key salah.");
+                
+                const data = await response.json();
+                const jsonText = data.candidates[0].content.parts[0].text;
+                state.results = JSON.parse(jsonText);
+                
+                renderResults(state.results.scenes);
+                
+                elements.loadingState.classList.add('hidden');
+                elements.resultContainer.classList.remove('hidden');
+            } catch (err) {
+                alert("Error: " + err.message);
+                elements.loadingState.classList.add('hidden');
+                elements.emptyState.classList.remove('hidden');
+            } finally {
+                state.isGenerating = false;
+                elements.generateBtn.disabled = false;
+            }
+        };
+
+        const renderResults = (scenes) => {
+            elements.sceneList.innerHTML = '';
+            scenes.forEach((scene, i) => {
+                const card = document.createElement('div');
+                card.className = 'card-pro p-8 shadow-sm hover:border-pink-200 transition fade-in';
+                card.innerHTML = `
+                    <div class="flex flex-col md:flex-row justify-between gap-6 mb-6">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 bg-pink-500 text-white rounded-2xl flex items-center justify-center font-black text-xl">
+                                ${i + 1}
+                            </div>
+                            <div>
+                                <h4 class="font-extrabold text-gray-800 text-lg leading-none">${scene.title}</h4>
+                                <span class="text-[10px] font-bold text-pink-400 uppercase tracking-widest mt-1 block italic">${scene.camera}</span>
+                            </div>
+                        </div>
+                        <button onclick="copyText(\`${scene.video_prompt.replace(/"/g, '&quot;')}\`)" class="p-3 bg-gray-50 rounded-xl hover:bg-pink-500 hover:text-white transition">
+                            <i data-lucide="copy" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="space-y-6">
+                        <div>
+                            <label class="text-[10px] font-black text-gray-300 uppercase tracking-widest block mb-2">Video Generator Prompt (Veo 3)</label>
+                            <div class="bg-gray-50 p-5 rounded-2xl text-sm leading-relaxed text-gray-700 italic border border-gray-100">
+                                ${scene.video_prompt}
+                            </div>
+                        </div>
+                        <div c
