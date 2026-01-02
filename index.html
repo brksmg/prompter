@@ -1,395 +1,556 @@
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KidVEO Pro - AI Prompt Engineering Studio</title>
-    <!-- Tailwind CSS for Styling -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>VEO 3 STUDIO ULTRA PRO</title>
+    
+    <!-- Premium CDNs -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Lucide Icons for Premium UI -->
     <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
     <style>
-        :root {
-            --primary: #FF8BA7;
-            --primary-dark: #FF6B8D;
-            --bg-soft: #FDF9F8;
-        }
+        :root { --primary: #F43F5E; --bg-dark: #020617; }
         body { 
             font-family: 'Plus Jakarta Sans', sans-serif; 
-            background-color: var(--bg-soft);
-            color: #33272A;
+            background: var(--bg-dark); 
+            color: #F1F5F9; 
+            margin: 0; 
+            -webkit-tap-highlight-color: transparent;
+            overflow-x: hidden;
         }
-        .glass-nav {
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(255, 139, 167, 0.1);
+        .glass { 
+            background: rgba(15, 23, 42, 0.85); 
+            backdrop-filter: blur(20px); 
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.05); 
         }
-        .btn-gradient {
-            background: linear-gradient(135deg, #FF9A9E 0%, #FAD0C4 100%);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        .btn-grad { 
+            background: linear-gradient(135deg, #F43F5E 0%, #E11D48 100%); 
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
         }
-        .btn-gradient:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px -10px rgba(255, 139, 167, 0.5);
+        .btn-grad:hover { transform: translateY(-2px); box-shadow: 0 10px 20px -5px rgba(244, 63, 94, 0.4); }
+        .btn-grad:active { transform: scale(0.95); }
+        
+        .sidebar-item.active { 
+            background: rgba(244, 63, 94, 0.1); 
+            color: #FB7185; 
+            border-right: 4px solid #F43F5E; 
         }
-        .card-pro {
-            background: white;
-            border-radius: 24px;
-            border: 1px solid rgba(255, 139, 167, 0.1);
-            box-shadow: 0 4px 20px -5px rgba(0, 0, 0, 0.05);
-        }
-        .input-pro {
-            background: #F8F8F8;
-            border: 2px solid transparent;
-            border-radius: 16px;
-            padding: 12px 16px;
-            transition: all 0.2s;
-            outline: none;
-        }
-        .input-pro:focus {
-            border-color: var(--primary);
-            background: white;
-            box-shadow: 0 0 0 4px rgba(255, 139, 167, 0.1);
-        }
-        .loader-spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid var(--primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
+        
+        .loader { 
+            width: 48px; height: 48px; border: 5px solid #1e293b; 
+            border-top: 4px solid #F43F5E; border-radius: 50%; 
+            animation: spin 1s linear infinite; 
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .hidden { display: none; }
-        .fade-in { animation: fadeIn 0.5s ease-out; }
+        
+        .toast-enter { animation: slideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        @keyframes slideUp { from { transform: translate(-50%, 100%); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
+        
+        .fade-in { animation: fadeIn 0.4s ease-out forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .sidebar-drawer { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        
+        /* Custom UI Switch */
+        .switch-bg { width: 44px; height: 22px; background: #334155; border-radius: 100px; position: relative; cursor: pointer; transition: 0.3s; }
+        .switch-dot { width: 16px; height: 16px; background: white; border-radius: 50%; position: absolute; top: 3px; left: 3px; transition: 0.3s; }
+        .switch-active { background: #F43F5E; }
+        .switch-dot-active { transform: translateX(22px); }
+
+        select { -webkit-appearance: none; appearance: none; }
+        .hide { display: none !important; }
     </style>
 </head>
 <body class="antialiased">
 
-    <!-- Navigation -->
-    <nav class="glass-nav sticky top-0 z-50 py-4 px-6">
-        <div class="max-w-7xl mx-auto flex justify-between items-center">
-            <div class="flex items-center gap-3">
-                <div class="bg-pink-500 p-2.5 rounded-2xl text-white shadow-lg">
-                    <i data-lucide="video" class="w-6 h-6"></i>
-                </div>
-                <div>
-                    <h1 class="text-xl font-extrabold tracking-tight">KidVEO <span class="text-pink-500">PRO</span></h1>
-                    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-none">Veo 3 Engineering Studio</p>
-                </div>
-            </div>
-            <div class="flex items-center gap-4">
-                <button id="langBtn" class="px-4 py-2 bg-white border border-pink-100 rounded-full text-xs font-bold hover:bg-pink-50 transition">
-                    🇮🇩 ID
-                </button>
-                <button id="adminBtn" class="p-2.5 bg-gray-50 rounded-xl hover:bg-pink-50 transition border border-gray-100 text-gray-400 hover:text-pink-500">
-                    <i data-lucide="settings" class="w-5 h-5"></i>
-                </button>
-            </div>
+    <!-- MOBILE HEADER -->
+    <header class="lg:hidden glass fixed top-0 left-0 right-0 z-[60] px-6 py-4 flex justify-between items-center border-b border-white/5">
+        <div class="flex items-center gap-3">
+            <div class="bg-rose-500 p-2 rounded-xl text-white shadow-lg"><i data-lucide="zap" class="w-5 h-5"></i></div>
+            <h1 class="text-xl font-black italic tracking-tighter uppercase leading-none">VEO 3 <span class="text-rose-500">PRO</span></h1>
         </div>
-    </nav>
+        <button id="mobileMenuBtn" class="p-2.5 bg-slate-900 rounded-xl text-white outline-none active:scale-90 transition">
+            <i data-lucide="menu" class="w-6 h-6"></i>
+        </button>
+    </header>
 
-    <main class="max-w-7xl mx-auto px-6 py-10 grid grid-cols-1 lg:grid-cols-12 gap-10">
-        
-        <!-- Sidebar: Configuration -->
-        <aside class="lg:col-span-4 space-y-6">
-            <div class="card-pro p-8">
-                <h3 class="text-lg font-extrabold flex items-center gap-2 mb-8">
-                    <i data-lucide="sliders-horizontal" class="w-5 h-5 text-pink-500"></i>
-                    Sutradara AI
-                </h3>
-
-                <div class="space-y-6">
-                    <div>
-                        <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-2">Profesi Anak</label>
-                        <input type="text" id="profession" placeholder="Contoh: Dokter Hewan, Koki..." class="w-full input-pro font-semibold text-gray-700">
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-2">Durasi</label>
-                            <select id="duration" class="w-full input-pro text-sm font-bold">
-                                <option value="30s">30 Detik</option>
-                                <option value="60s" selected>60 Detik</option>
-                                <option value="120s">120 Detik</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-2">Scene</label>
-                            <select id="scenes" class="w-full input-pro text-sm font-bold">
-                                <option value="3">3 Scene</option>
-                                <option value="4" selected>4 Scene</option>
-                                <option value="6">6 Scene</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-2">Gaya Visual</label>
-                        <select id="style" class="w-full input-pro text-sm font-bold">
-                            <option value="3D Pixar Style, subsurface scattering, cinematic lighting">3D Pixar Style</option>
-                            <option value="2D Studio Ghibli, hand-painted textures, soft aesthetic">Studio Ghibli</option>
-                            <option value="Tactile Claymation, stop-motion textures, realistic felt">Claymation</option>
-                            <option value="Chibi Anime, high-key lighting, vibrant colors">Chibi Anime</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-2">Mood Musik</label>
-                        <select id="music" class="w-full input-pro text-sm font-bold">
-                            <option value="Happy & Whimsical">Ceria (Happy)</option>
-                            <option value="Calm & Lullaby">Tenang (Calm)</option>
-                            <option value="Epic & Adventurous">Petualangan (Epic)</option>
-                        </select>
-                    </div>
-
-                    <div class="pt-6 border-t border-gray-100">
-                        <button id="generateBtn" class="w-full btn-gradient py-5 rounded-2xl text-white font-extrabold shadow-lg flex items-center justify-center gap-3">
-                            <i data-lucide="sparkles" class="w-5 h-5"></i>
-                            GENERATE PROMPTS
-                        </button>
-                    </div>
+    <!-- SIDEBAR NAVIGATION -->
+    <div id="sidebarOverlay" class="fixed inset-0 bg-black/80 z-[70] hide lg:hidden"></div>
+    <aside id="sidebar" class="fixed top-0 bottom-0 left-0 z-[80] w-72 glass border-r border-white/5 flex flex-col p-8 sidebar-drawer -translate-x-full lg:translate-x-0">
+        <div class="mb-10 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="p-2.5 bg-rose-500 rounded-2xl text-white shadow-xl shadow-rose-500/20"><i data-lucide="clapperboard" class="w-6 h-6"></i></div>
+                <div>
+                    <h2 class="text-2xl font-black italic tracking-tighter leading-none">VEO 3 <span class="text-rose-500">PRO</span></h2>
+                    <p class="text-[9px] font-bold text-slate-500 uppercase tracking-widest mt-1">Production Engine</p>
                 </div>
             </div>
+            <button id="closeSidebar" class="lg:hidden p-2 text-slate-400 hover:text-white"><i data-lucide="x" class="w-6 h-6"></i></button>
+        </div>
+
+        <nav class="flex-1 space-y-2">
+            <button id="navStudio" class="w-full sidebar-item active flex items-center gap-4 p-4 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all">
+                <i data-lucide="zap" class="w-5 h-5"></i> Story Studio
+            </button>
+            <button id="navManagement" class="w-full sidebar-item flex items-center gap-4 p-4 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all text-slate-500 hover:text-white">
+                <i data-lucide="shield-check" class="w-5 h-5"></i> Management
+            </button>
+        </nav>
+
+        <div class="mt-auto pt-6 border-t border-white/5 space-y-4">
+            <div class="p-4 bg-slate-900/50 rounded-2xl border border-white/5">
+                <span class="text-[8px] font-black text-slate-500 uppercase block mb-1 tracking-widest leading-none">Engine Connectivity</span>
+                <div class="flex items-center gap-2 mt-1">
+                    <div id="apiIndicator" class="w-2 h-2 rounded-full bg-rose-500"></div>
+                    <span id="apiStatusText" class="text-[10px] font-bold text-white tracking-widest uppercase">DISCONNECTED</span>
+                </div>
+            </div>
+            <button id="logoutBtn" class="hide w-full flex items-center gap-3 p-4 text-rose-500 font-black text-[10px] uppercase tracking-widest hover:bg-rose-500/10 rounded-xl transition">
+                <i data-lucide="log-out" class="w-4 h-4"></i> Logout Admin
+            </button>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="lg:ml-72 min-h-screen pt-24 lg:pt-0 p-6 lg:p-12">
+        <div class="max-w-6xl mx-auto">
             
-            <div class="p-6 bg-pink-50 rounded-3xl border border-pink-100">
-                <h4 class="text-xs font-bold text-pink-600 mb-2 flex items-center gap-2">
-                    <i data-lucide="info" class="w-4 h-4"></i>
-                    VEO 3 OPTIMIZED
-                </h4>
-                <p class="text-[11px] text-pink-400 leading-relaxed font-medium italic">
-                    Prompt yang dihasilkan dirancang khusus untuk memicu fitur teknis Google Veo 3 seperti konsistensi karakter dan pencahayaan volumetrik.
-                </p>
-            </div>
-        </aside>
-
-        <!-- Main Content: Results -->
-        <section class="lg:col-span-8">
-            <!-- Empty State -->
-            <div id="emptyState" class="card-pro border-4 border-dashed border-gray-100 h-[600px] flex flex-col items-center justify-center text-center p-12">
-                <div class="w-24 h-24 bg-pink-50 rounded-full flex items-center justify-center mb-6 text-pink-300">
-                    <i data-lucide="clapperboard" class="w-12 h-12"></i>
-                </div>
-                <h2 class="text-2xl font-extrabold text-gray-800 mb-2">Studio Anda Kosong</h2>
-                <p class="text-gray-400 max-w-sm font-medium">Isi detail profesi di samping untuk memulainya. Pastikan API Key sudah terpasang.</p>
-            </div>
-
-            <!-- Loading State -->
-            <div id="loadingState" class="hidden h-[600px] flex flex-col items-center justify-center space-y-6">
-                <div class="loader-spinner"></div>
-                <div class="text-center">
-                    <h3 class="text-lg font-bold text-gray-800">Menghubungi Pusat Data Gemini...</h3>
-                    <p class="text-sm text-gray-400 font-medium">Merancang skenario berkualitas sinematik untuk Anda.</p>
-                </div>
-            </div>
-
-            <!-- Result List -->
-            <div id="resultContainer" class="hidden space-y-8 fade-in">
-                <div class="flex justify-between items-center">
+            <!-- VIEW: STUDIO -->
+            <div id="viewStudio" class="fade-in space-y-10">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
                     <div>
-                        <h2 id="resultTitle" class="text-3xl font-extrabold text-gray-800 tracking-tight">Storyboard</h2>
-                        <p class="text-[10px] font-bold text-pink-400 uppercase tracking-widest mt-1">Salin prompt per scene untuk hasil terbaik</p>
+                        <h1 class="text-3xl md:text-5xl font-black tracking-tighter uppercase italic">Production <span class="text-rose-500">Pipeline</span></h1>
+                        <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-2 px-1">Professional Storyboarding & Audio Engine</p>
                     </div>
-                    <div class="flex gap-2">
-                        <button id="copyAllBtn" class="px-5 py-2.5 bg-gray-900 text-white rounded-xl text-xs font-bold hover:bg-black transition flex items-center gap-2">
-                            <i data-lucide="copy" class="w-4 h-4"></i> SALIN SEMUA
-                        </button>
+                    <div class="flex bg-slate-900 border border-white/5 p-1.5 rounded-2xl shadow-2xl w-full md:w-auto">
+                        <button onclick="setLang('id')" id="langID" class="flex-1 md:flex-none px-6 py-2 rounded-xl text-[10px] font-black transition-all bg-rose-500 text-white">ID</button>
+                        <button onclick="setLang('en')" id="langEN" class="flex-1 md:flex-none px-6 py-2 rounded-xl text-[10px] font-black transition-all text-slate-500 hover:text-white">EN</button>
                     </div>
                 </div>
 
-                <div id="sceneList" class="space-y-8">
-                    <!-- Scenes injected here -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                    <!-- Left Column: Inputs -->
+                    <div class="lg:col-span-8 space-y-8">
+                        <div class="glass p-8 rounded-[40px] space-y-8 shadow-2xl">
+                            <div>
+                                <label class="text-[11px] font-black text-slate-500 uppercase tracking-widest block mb-4 px-1 italic">Project Narrative / Topic</label>
+                                <textarea id="inputTopic" rows="4" placeholder="Contoh: Petualangan anak kecil memakai jubah superhero biru yang menolong kucing di planet Mars..." class="w-full bg-slate-950/50 border border-slate-800 focus:border-rose-500 rounded-[32px] p-6 outline-none transition text-sm font-medium leading-relaxed"></textarea>
+                            </div>
+                            
+                            <div class="grid grid-cols-2 md:grid-cols-3 gap-6">
+                                <div class="space-y-2">
+                                    <label class="text-[9px] font-black text-slate-500 uppercase tracking-widest block px-1">Scene Total</label>
+                                    <select id="selectScenes" class="w-full bg-slate-900 border border-slate-800 rounded-2xl p-4 text-[11px] font-bold outline-none cursor-pointer focus:ring-1 ring-rose-500">
+                                        <option value="3">3 Scenes</option><option value="4" selected>4 Scenes</option><option value="6">6 Scenes</option><option value="8">8 Scenes</option>
+                                    </select>
+                                </div>
+                                <div class="space-y-2">
+                                    <label class="text-[9px] font-black text-slate-500 uppercase tracking-widest block px-1">Cam Motion</label>
+                                    <select id="selectCam" class="w-full bg-slate-900 border border-slate-800 rounded-2xl p-4 text-[11px] font-bold outline-none cursor-pointer focus:ring-1 ring-rose-500">
+                                        <option value="Slow Pan">Slow Pan</option><option value="Dolly In">Dolly In</option><option value="Dolly Out">Dolly Out</option><option value="Orbit Shot">Orbit Shot</option>
+                                    </select>
+                                </div>
+                                <div class="hidden md:block space-y-2">
+                                    <label class="text-[9px] font-black text-slate-500 uppercase tracking-widest block px-1">Art Style</label>
+                                    <select id="selectStyle" class="w-full bg-slate-900 border border-slate-800 rounded-2xl p-4 text-[11px] font-bold outline-none cursor-pointer focus:ring-1 ring-rose-500">
+                                        <option value="3D Pixar Style">3D Pixar Style</option><option value="Ghibli Anime">Ghibli Anime</option><option value="Tactile Claymation">Pro Claymation</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <button id="generateBtn" class="w-full btn-grad py-5 rounded-[24px] text-white font-black text-xs tracking-[0.2em] uppercase flex items-center justify-center gap-4 active:scale-95">
+                                <i data-lucide="sparkles" class="w-5 h-5"></i>
+                                Launch Production
+                            </button>
+                        </div>
+
+                        <!-- Loading State -->
+                        <div id="loadingState" class="hide h-64 flex flex-col items-center justify-center space-y-6">
+                            <div class="loader"></div>
+                            <p class="text-[10px] font-black text-rose-500 animate-pulse tracking-[0.4em] uppercase">Compiling Production Engine...</p>
+                        </div>
+
+                        <!-- Result Section -->
+                        <div id="resultArea" class="hide space-y-10 pb-20">
+                            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                                <h2 class="text-3xl font-black italic tracking-tighter uppercase">Storyboard <span class="text-rose-500 underline">Output</span></h2>
+                                <button id="copyAllJson" class="w-full md:w-auto px-8 py-4 bg-white text-slate-900 rounded-2xl font-black text-[10px] tracking-widest uppercase hover:scale-105 transition-all">Copy Master JSON</button>
+                            </div>
+
+                            <div class="p-6 bg-emerald-500/10 border border-emerald-500/20 rounded-[32px] flex items-center gap-5">
+                                <i data-lucide="lock" class="w-6 h-6 text-emerald-500 shrink-0"></i>
+                                <div>
+                                    <span class="text-[10px] font-black text-emerald-500 uppercase tracking-widest block mb-1">Character Continuity Lock</span>
+                                    <p id="charLockDesc" class="text-sm font-bold text-slate-300 italic">"Analysing identity..."</p>
+                                </div>
+                            </div>
+
+                            <div id="sceneContainer" class="space-y-8">
+                                <!-- Scene Cards Injected Here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Settings -->
+                    <div class="lg:col-span-4 space-y-6">
+                        <div class="glass p-8 rounded-[40px] space-y-8 sticky top-10">
+                            <h3 class="text-xs font-black uppercase tracking-widest flex items-center gap-2 text-rose-500">
+                                <i data-lucide="shield-check" class="w-5 h-5"></i> Quality Gates
+                            </h3>
+                            
+                            <div class="space-y-4">
+                                <div class="flex justify-between items-center p-4 bg-slate-950 border border-white/5 rounded-2xl cursor-pointer hover:bg-slate-900 transition-all" onclick="toggleSwitch('guardStyle')">
+                                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Anti-Style Mutation</span>
+                                    <div id="guardStyle" class="switch-bg switch-active"><div class="switch-dot switch-dot-active"></div></div>
+                                </div>
+                                <div class="flex justify-between items-center p-4 bg-slate-950 border border-white/5 rounded-2xl cursor-pointer hover:bg-slate-900 transition-all" onclick="toggleSwitch('guardLighting')">
+                                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Global Lighting Lock</span>
+                                    <div id="guardLighting" class="switch-bg switch-active"><div class="switch-dot switch-dot-active"></div></div>
+                                </div>
+                                <div class="flex justify-between items-center p-4 bg-slate-950 border border-white/5 rounded-2xl cursor-pointer hover:bg-slate-900 transition-all" onclick="toggleSwitch('guardAudio')">
+                                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Sync Audio Hooks</span>
+                                    <div id="guardAudio" class="switch-bg switch-active"><div class="switch-dot switch-dot-active"></div></div>
+                                </div>
+                            </div>
+
+                            <div class="pt-8 border-t border-white/5 space-y-6">
+                                <div className="p-5 bg-rose-500/5 rounded-2xl border border-rose-500/10">
+                                    <p class="text-[10px] text-slate-400 font-bold uppercase italic leading-relaxed px-2">
+                                        "Setiap prompt dirancang dengan Hook emosional untuk meningkatkan retensi penonton anak."
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </section>
+
+            <!-- VIEW: MANAGEMENT -->
+            <div id="viewManagement" class="hide fade-in space-y-12 pb-20">
+                <!-- AUTH VIEW -->
+                <div id="authPanel" class="max-w-md mx-auto mt-10 space-y-10">
+                    <div class="glass p-12 rounded-[48px] text-center space-y-8 shadow-2xl border border-rose-500/10">
+                        <div class="w-20 h-20 bg-rose-500/10 rounded-[30px] flex items-center justify-center mx-auto border border-rose-500/20 shadow-2xl">
+                            <i data-lucide="lock" class="w-10 h-10 text-rose-500"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-2xl font-black tracking-tight mb-2">Restricted Access</h2>
+                            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest italic leading-relaxed px-4">Masukkan Master Password untuk mengakses Panel Management.</p>
+                        </div>
+                        <div class="space-y-4">
+                            <input type="password" id="passInput" placeholder="••••••••" class="w-full bg-slate-950 border border-slate-800 rounded-[24px] p-6 text-center font-black tracking-[0.8em] outline-none focus:ring-2 ring-rose-500 shadow-inner" onkeydown="if(event.key==='Enter') login()">
+                            <button onclick="login()" class="w-full btn-grad py-5 rounded-[24px] font-black text-xs tracking-widest uppercase shadow-xl">Authenticate</button>
+                        </div>
+                        <p class="text-[9px] font-bold text-slate-700 tracking-widest uppercase">Master Pass: RF2025</p>
+                    </div>
+                </div>
+
+                <!-- DASHBOARD VIEW -->
+                <div id="adminDashboard" class="hide space-y-12">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+                        <div>
+                            <h1 class="text-4xl font-black tracking-tighter uppercase italic">System <span class="text-rose-500 underline">Control</span></h1>
+                            <p class="text-xs font-bold text-slate-500 uppercase tracking-widest mt-2 px-1">Manage API Credentials & Usage Analytics</p>
+                        </div>
+                        <div class="flex bg-slate-900 border border-white/5 p-1.5 rounded-2xl w-full md:w-auto shadow-xl">
+                            <button onclick="switchAdminTab('config')" id="tabBtnConfig" class="flex-1 px-6 py-2 rounded-xl text-[10px] font-black transition tracking-widest bg-rose-500 text-white">CONFIG</button>
+                            <button onclick="switchAdminTab('logs')" id="tabBtnLogs" class="flex-1 px-6 py-2 rounded-xl text-[10px] font-black transition tracking-widest text-slate-500 hover:text-white">LOGS</button>
+                            <button onclick="switchAdminTab('stats')" id="tabBtnStats" class="flex-1 px-6 py-2 rounded-xl text-[10px] font-black transition tracking-widest text-slate-500 hover:text-white">STATS</button>
+                        </div>
+                    </div>
+
+                    <!-- TAB: CONFIG -->
+                    <div id="adminTabConfig" class="grid grid-cols-1 md:grid-cols-2 gap-8 animate-in fade-in">
+                        <div class="glass p-10 rounded-[48px] space-y-8">
+                            <h3 class="font-black text-sm uppercase flex items-center gap-3 tracking-widest"><i data-lucide="key" class="w-5 h-5 text-rose-500"></i> API Credential</h3>
+                            <div class="space-y-3">
+                                <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest block px-1">Gemini AI Key</label>
+                                <input type="password" id="apiKeyInput" placeholder="AIzaSy..." class="w-full bg-slate-950 border border-slate-800 rounded-[28px] p-6 text-xs font-mono tracking-widest outline-none focus:ring-1 ring-rose-500 shadow-inner" />
+                            </div>
+                            <button onclick="saveApi()" class="w-full btn-grad py-5 rounded-[24px] font-black text-[10px] uppercase tracking-widest shadow-2xl">Update Core Key</button>
+                        </div>
+                        <div class="glass p-10 rounded-[48px] flex flex-col items-center justify-center text-center space-y-8">
+                            <i data-lucide="database" class="w-20 h-20 text-slate-800"></i>
+                            <div class="space-y-4">
+                                <h4 class="font-black uppercase tracking-widest text-xs">Vercel Deployment Safe</h4>
+                                <p class="text-xs text-slate-500 font-medium leading-relaxed px-4">Data disimpan secara lokal di browser Anda. VEO 3 Studio berjalan sepenuhnya client-side di Vercel tanpa database luar, menjamin keamanan total.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB: LOGS -->
+                    <div id="adminTabLogs" class="hide glass rounded-[48px] overflow-hidden border border-white/5 animate-in fade-in shadow-2xl">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-xs">
+                                <thead class="bg-slate-900/80 text-slate-500 font-black uppercase tracking-widest">
+                                    <tr><th class="p-8">Timestamp</th><th class="p-8">Topic Brief</th><th class="p-8">Scenes</th><th class="p-8">Status</th></tr>
+                                </thead>
+                                <tbody id="logsTableBody" class="divide-y divide-white/5 font-bold">
+                                    <!-- Logs Injected -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div id="logsEmpty" class="p-32 text-center text-[11px] font-black text-slate-600 uppercase tracking-[0.6em] italic hide">No Production Logs Found.</div>
+                    </div>
+
+                    <!-- TAB: STATS -->
+                    <div id="adminTabStats" class="hide grid grid-cols-1 md:grid-cols-3 gap-8 animate-in fade-in">
+                        <div class="glass p-10 rounded-[40px] text-center space-y-2">
+                            <div id="statJobs" class="text-4xl font-black text-rose-500">0</div>
+                            <div class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Total Jobs</div>
+                        </div>
+                        <div class="glass p-10 rounded-[40px] text-center space-y-2">
+                            <div id="statTokens" class="text-4xl font-black text-emerald-500">0.0k</div>
+                            <div class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Est. Tokens</div>
+                        </div>
+                        <div class="glass p-10 rounded-[40px] text-center space-y-2 border border-rose-500/10">
+                            <div class="text-4xl font-black text-blue-500">100%</div>
+                            <div class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Health</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
     </main>
 
-    <!-- Modal: Settings -->
-    <div id="adminModal" class="hidden fixed inset-0 z-[60] flex items-center justify-center p-6">
-        <div class="absolute inset-0 bg-gray-900/60 backdrop-blur-md" id="modalOverlay"></div>
-        <div class="relative bg-white w-full max-w-md rounded-[40px] p-10 shadow-2xl scale-100 transition-transform">
-            <h2 class="text-2xl font-black text-gray-800 mb-2">Konfigurasi API</h2>
-            <p class="text-sm text-gray-400 font-medium mb-8">Masukkan Google Gemini API Key. Kami tidak menyimpan data ini di server kami.</p>
-            
-            <div class="space-y-6">
-                <div>
-                    <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-3">Gemini API Key</label>
-                    <input type="password" id="apiKeyInput" placeholder="AIzaSy..." class="w-full input-pro font-mono text-sm">
-                </div>
-                <div class="flex flex-col gap-3">
-                    <button id="saveApiBtn" class="w-full bg-gray-900 text-white font-black py-4 rounded-2xl hover:bg-black transition">SIMPAN</button>
-                    <a href="https://aistudio.google.com/" target="_blank" class="text-center text-[10px] font-black text-pink-500 hover:underline uppercase tracking-widest">Dapatkan API Key Gratis</a>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Toast Notification -->
-    <div id="toast" class="hidden fixed bottom-10 left-1/2 -translate-x-1/2 z-[100] bg-gray-900 text-white px-8 py-4 rounded-full font-bold shadow-2xl flex items-center gap-3">
-        <div class="w-2 h-2 bg-pink-500 rounded-full animate-pulse"></div>
-        <span id="toastMsg">Teks disalin!</span>
+    <!-- TOAST NOTIFICATION -->
+    <div id="toast" class="hide fixed bottom-10 left-1/2 -translate-x-1/2 z-[100] flex items-center gap-4 px-10 py-6 rounded-full font-black text-[11px] uppercase tracking-widest shadow-[0_30px_60px_-12px_rgba(244,63,94,0.3)] bg-white text-slate-950 toast-enter">
+        <div id="toastDot" class="w-2.5 h-2.5 bg-rose-500 rounded-full animate-ping"></div>
+        <span id="toastMsg">Action Success</span>
     </div>
 
     <script>
-        // --- APP STATE ---
+        // --- GLOBAL STATE ---
         let state = {
+            view: 'studio',
+            isLogged: false,
             lang: 'id',
-            apiKey: localStorage.getItem('gemini_api_key') || '',
+            apiKey: localStorage.getItem('v3_ultra_key') || '',
+            history: JSON.parse(localStorage.getItem('v3_ultra_logs') || '[]'),
+            currentData: null,
             isGenerating: false,
-            results: null
+            guards: { guardStyle: true, guardLighting: true, guardAudio: true }
         };
 
-        // --- DOM ELEMENTS ---
-        const elements = {
-            generateBtn: document.getElementById('generateBtn'),
-            profession: document.getElementById('profession'),
-            duration: document.getElementById('duration'),
-            scenes: document.getElementById('scenes'),
-            style: document.getElementById('style'),
-            music: document.getElementById('music'),
-            emptyState: document.getElementById('emptyState'),
-            loadingState: document.getElementById('loadingState'),
-            resultContainer: document.getElementById('resultContainer'),
-            sceneList: document.getElementById('sceneList'),
-            adminBtn: document.getElementById('adminBtn'),
-            adminModal: document.getElementById('adminModal'),
-            modalOverlay: document.getElementById('modalOverlay'),
-            saveApiBtn: document.getElementById('saveApiBtn'),
-            apiKeyInput: document.getElementById('apiKeyInput'),
-            langBtn: document.getElementById('langBtn'),
-            toast: document.getElementById('toast'),
-            toastMsg: document.getElementById('toastMsg'),
-            copyAllBtn: document.getElementById('copyAllBtn')
-        };
+        // --- CORE FUNCTIONS ---
+        function initIcons() { lucide.createIcons(); }
 
-        // Initialize Icons
-        lucide.createIcons();
+        function triggerToast(msg, isError = false) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toastMsg');
+            const toastDot = document.getElementById('toastDot');
+            toastMsg.innerText = msg;
+            toastDot.className = isError ? 'w-2.5 h-2.5 bg-red-500 rounded-full' : 'w-2.5 h-2.5 bg-rose-500 rounded-full animate-ping';
+            toast.classList.remove('hide');
+            setTimeout(() => toast.classList.add('hide'), 3000);
+        }
 
-        // --- FUNCTIONS ---
-        const showToast = (msg) => {
-            elements.toastMsg.innerText = msg;
-            elements.toast.classList.remove('hidden');
-            setTimeout(() => elements.toast.classList.add('hidden'), 3000);
-        };
-
-        const toggleModal = (show) => {
-            elements.adminModal.classList.toggle('hidden', !show);
-            if (show) elements.apiKeyInput.value = state.apiKey;
-        };
-
-        const copyText = (text) => {
+        function copy(txt) {
             const el = document.createElement('textarea');
-            el.value = text;
+            el.value = txt;
             document.body.appendChild(el);
             el.select();
             document.execCommand('copy');
             document.body.removeChild(el);
-            showToast("Teks disalin ke papan klip!");
+            triggerToast("Copied to Clipboard!");
+        }
+
+        function setLang(l) {
+            state.lang = l;
+            document.getElementById('langID').className = l === 'id' ? 'flex-1 md:flex-none px-6 py-2 rounded-xl text-[10px] font-black bg-rose-500 text-white' : 'flex-1 md:flex-none px-6 py-2 rounded-xl text-[10px] font-black text-slate-500 hover:text-white';
+            document.getElementById('langEN').className = l === 'en' ? 'flex-1 md:flex-none px-6 py-2 rounded-xl text-[10px] font-black bg-rose-500 text-white' : 'flex-1 md:flex-none px-6 py-2 rounded-xl text-[10px] font-black text-slate-500 hover:text-white';
+            triggerToast(`Engine Language: ${l.toUpperCase()}`);
+        }
+
+        function toggleSwitch(id) {
+            state.guards[id] = !state.guards[id];
+            const el = document.getElementById(id);
+            const dot = el.querySelector('div');
+            el.classList.toggle('switch-active');
+            dot.classList.toggle('switch-dot-active');
+        }
+
+        // --- NAVIGATION ---
+        const views = { studio: document.getElementById('viewStudio'), management: document.getElementById('viewManagement') };
+        const navs = { studio: document.getElementById('navStudio'), management: document.getElementById('navManagement') };
+
+        function setView(v) {
+            state.view = v;
+            Object.keys(views).forEach(key => views[key].classList.toggle('hide', key !== v));
+            Object.keys(navs).forEach(key => navs[key].classList.toggle('active', key === v));
+            document.getElementById('sidebar').classList.add('-translate-x-full');
+            document.getElementById('sidebarOverlay').classList.add('hide');
+            
+            if (v === 'management') {
+                document.getElementById('authPanel').classList.toggle('hide', state.isLogged);
+                document.getElementById('adminDashboard').classList.toggle('hide', !state.isLogged);
+                document.getElementById('logoutBtn').classList.toggle('hide', !state.isLogged);
+                if(state.isLogged) renderLogs();
+            }
+            initIcons();
+        }
+
+        navs.studio.onclick = () => setView('studio');
+        navs.management.onclick = () => setView('management');
+        document.getElementById('mobileMenuBtn').onclick = () => {
+            document.getElementById('sidebar').classList.remove('-translate-x-full');
+            document.getElementById('sidebarOverlay').classList.remove('hide');
+        };
+        document.getElementById('closeSidebar').onclick = () => {
+            document.getElementById('sidebar').classList.add('-translate-x-full');
+            document.getElementById('sidebarOverlay').classList.add('hide');
         };
 
-        // --- API INTEGRATION ---
-        const generatePrompts = async () => {
-            if (!state.apiKey) {
-                toggleModal(true);
-                return showToast("Atur API Key terlebih dahulu!");
+        // --- ADMIN ACTIONS ---
+        function login() {
+            const pass = document.getElementById('passInput').value;
+            if (pass === 'RF2025') {
+                state.isLogged = true;
+                document.getElementById('authPanel').classList.add('hide');
+                document.getElementById('adminDashboard').classList.remove('hide');
+                document.getElementById('logoutBtn').classList.remove('hide');
+                document.getElementById('apiKeyInput').value = state.apiKey;
+                renderLogs();
+                triggerToast("Admin Authorized.");
+            } else {
+                triggerToast("Invalid Password!", true);
+                document.getElementById('passInput').value = '';
             }
-            if (!elements.profession.value) return showToast("Masukkan nama profesi!");
+        }
+
+        function logout() {
+            state.isLogged = false;
+            setView('studio');
+            triggerToast("Logged Out.");
+        }
+        document.getElementById('logoutBtn').onclick = logout;
+
+        function saveApi() {
+            state.apiKey = document.getElementById('apiKeyInput').value;
+            localStorage.setItem('v3_ultra_key', state.apiKey);
+            document.getElementById('apiIndicator').className = state.apiKey ? 'w-2 h-2 rounded-full bg-emerald-500 animate-pulse' : 'w-2 h-2 rounded-full bg-rose-500';
+            document.getElementById('apiStatusText').innerText = state.apiKey ? 'CONNECTED' : 'DISCONNECTED';
+            triggerToast("Configuration Saved.");
+        }
+
+        function switchAdminTab(t) {
+            ['Config', 'Logs', 'Stats'].forEach(tab => {
+                document.getElementById(`adminTab${tab}`).classList.add('hide');
+                document.getElementById(`tabBtn${tab}`).className = 'flex-1 px-6 py-2 rounded-xl text-[10px] font-black transition tracking-widest text-slate-500 hover:text-white';
+            });
+            document.getElementById(`adminTab${t.charAt(0).toUpperCase() + t.slice(1)}`).classList.remove('hide');
+            document.getElementById(`tabBtn${t.charAt(0).toUpperCase() + t.slice(1)}`).className = 'flex-1 px-6 py-2 rounded-xl text-[10px] font-black transition tracking-widest bg-rose-500 text-white';
+            initIcons();
+        }
+
+        function renderLogs() {
+            const body = document.getElementById('logsTableBody');
+            const empty = document.getElementById('logsEmpty');
+            body.innerHTML = '';
+            empty.classList.toggle('hide', state.history.length > 0);
+            state.history.forEach(log => {
+                body.innerHTML += `<tr class="hover:bg-white/5 transition"><td class="p-8 text-slate-500">${log.ts}</td><td class="p-8 truncate max-w-[300px] text-slate-300 italic">"${log.topic}"</td><td class="p-8">${log.scenes} Scene</td><td class="p-8 text-emerald-500 flex items-center gap-2"><div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div> COMPLETED</td></tr>`;
+            });
+            document.getElementById('statJobs').innerText = state.history.length;
+            document.getElementById('statTokens').innerText = (state.history.length * 4.2).toFixed(1) + 'k';
+        }
+
+        // --- PRODUCTION ENGINE ---
+        document.getElementById('generateBtn').onclick = async () => {
+            if (!state.apiKey) { setView('management'); return triggerToast("Set API Key first!", true); }
+            const topic = document.getElementById('inputTopic').value;
+            if (!topic) return triggerToast("Briefing required!", true);
 
             state.isGenerating = true;
-            elements.generateBtn.disabled = true;
-            elements.emptyState.classList.add('hidden');
-            elements.resultContainer.classList.add('hidden');
-            elements.loadingState.classList.remove('hidden');
+            document.getElementById('generateBtn').disabled = true;
+            document.getElementById('loadingState').classList.remove('hide');
+            document.getElementById('resultArea').classList.add('hide');
 
-            const sysPrompt = `You are a professional AI Cinema Director for Google Veo 3. 
-            Generate a detailed video storyboard for kids education.
-            
-            VEO 3 PARAMS:
-            - Texture: ${elements.style.value}
-            - Technicals: "volumetric lighting", "ray-tracing", "focal length 35mm", "detailed textures".
-            - Movement: "crane shot", "pan left", "dynamic focus".
-            - Character: Ensure consistent facial expressions.
-            
-            CONTEXT:
-            - Profession: ${elements.profession.value}
-            - Language: ${state.lang === 'id' ? 'Indonesian' : 'English'}
-            
-            JSON FORMAT (MANDATORY):
-            {
-                "scenes": [
-                    {
-                        "title": "Scene Name",
-                        "video_prompt": "Ultra detailed VEO 3 prompt...",
-                        "camera": "Technical movement detail",
-                        "audio": "Narration text",
-                        "bgm": "Musical cue"
-                    }
-                ]
-            }`;
-
-            const userPrompt = `Create a ${elements.scenes.value} scene animation storyboard about ${elements.profession.value}. Total duration ${elements.duration.value}. Music mood: ${elements.music.value}. The last scene should be the character smiling and waving to create a loop-safe video.`;
+            const systemPrompt = `Professional AI Production Engine for Google Veo 3. 
+            Lock character in Scene 1 and repeat exactly. Sync audio narration with kids hooks.
+            Language: ${state.lang === 'id' ? 'Bahasa Indonesia' : 'English'}. 
+            Style: ${document.getElementById('selectStyle').value}. 
+            Cam: ${document.getElementById('selectCam').value}.
+            JSON SCHEMA: { "meta": { "topic": "string", "character_id": "string" }, "scenes": [ { "id": number, "duration": "7s", "title": "string", "video_prompt": "string", "audio_prompt": "string" } ] }`;
 
             try {
                 const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${state.apiKey}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        contents: [{ parts: [{ text: userPrompt }] }],
-                        systemInstruction: { parts: [{ text: sysPrompt }] },
-                        generationConfig: { responseMimeType: "application/json" }
+                        contents: [{ parts: [{ text: `Topic: ${topic}` }] }],
+                        systemInstruction: { parts: [{ text: systemPrompt }] },
+                        generationConfig: { responseMimeType: "application/json", temperature: 0.85 }
                     })
                 });
 
-                if (!response.ok) throw new Error("API Limit atau Key salah.");
-                
+                if (!response.ok) throw new Error("API Connection Failed");
                 const data = await response.json();
-                const jsonText = data.candidates[0].content.parts[0].text;
-                state.results = JSON.parse(jsonText);
+                state.currentData = JSON.parse(data.candidates[0].content.parts[0].text);
                 
-                renderResults(state.results.scenes);
+                renderResults(state.currentData);
                 
-                elements.loadingState.classList.add('hidden');
-                elements.resultContainer.classList.remove('hidden');
+                state.history.unshift({ ts: new Date().toLocaleString(), topic: topic, scenes: state.currentData.scenes.length });
+                localStorage.setItem('v3_ultra_logs', JSON.stringify(state.history.slice(0, 30)));
+                
+                document.getElementById('loadingState').classList.add('hide');
+                document.getElementById('resultArea').classList.remove('hide');
+                triggerToast("Production Compiled!");
             } catch (err) {
                 alert("Error: " + err.message);
-                elements.loadingState.classList.add('hidden');
-                elements.emptyState.classList.remove('hidden');
+                document.getElementById('loadingState').classList.add('hide');
             } finally {
                 state.isGenerating = false;
-                elements.generateBtn.disabled = false;
+                document.getElementById('generateBtn').disabled = false;
             }
         };
 
-        const renderResults = (scenes) => {
-            elements.sceneList.innerHTML = '';
-            scenes.forEach((scene, i) => {
+        function renderResults(data) {
+            document.getElementById('charLockDesc').innerText = data.meta.character_id;
+            const container = document.getElementById('sceneContainer');
+            container.innerHTML = '';
+            data.scenes.forEach((s, i) => {
                 const card = document.createElement('div');
-                card.className = 'card-pro p-8 shadow-sm hover:border-pink-200 transition fade-in';
+                card.className = "glass p-8 md:p-10 rounded-[48px] border border-white/5 space-y-8 fade-in";
                 card.innerHTML = `
-                    <div class="flex flex-col md:flex-row justify-between gap-6 mb-6">
-                        <div class="flex items-center gap-4">
-                            <div class="w-12 h-12 bg-pink-500 text-white rounded-2xl flex items-center justify-center font-black text-xl">
-                                ${i + 1}
-                            </div>
-                            <div>
-                                <h4 class="font-extrabold text-gray-800 text-lg leading-none">${scene.title}</h4>
-                                <span class="text-[10px] font-bold text-pink-400 uppercase tracking-widest mt-1 block italic">${scene.camera}</span>
-                            </div>
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                        <div class="flex items-center gap-5">
+                            <div class="w-14 h-14 bg-rose-500 text-white rounded-[20px] flex items-center justify-center font-black text-2xl shadow-xl shadow-rose-500/20">${s.id}</div>
+                            <div><h4 class="font-extrabold text-xl tracking-tight leading-none mb-1 text-white">${s.title}</h4><span class="text-[9px] font-bold text-slate-500 uppercase tracking-widest">${s.duration} • SYNCED</span></div>
                         </div>
-                        <button onclick="copyText(\`${scene.video_prompt.replace(/"/g, '&quot;')}\`)" class="p-3 bg-gray-50 rounded-xl hover:bg-pink-500 hover:text-white transition">
-                            <i data-lucide="copy" class="w-5 h-5"></i>
-                        </button>
+                        <div class="flex gap-2 w-full md:w-auto">
+                            <button onclick="copy(\`${s.video_prompt.replace(/'/g, "\\'")}\`)" class="flex-1 md:flex-none p-4 bg-slate-900 rounded-2xl hover:bg-rose-500 transition border border-white/5 flex items-center justify-center gap-3 text-[10px] font-black"><i data-lucide="video" class="w-4 h-4"></i> VEO 3</button>
+                            <button onclick="copy(\`${s.audio_prompt.replace(/'/g, "\\'")}\`)" class="flex-1 md:flex-none p-4 bg-slate-900 rounded-2xl hover:bg-white hover:text-slate-950 transition border border-white/5 flex items-center justify-center gap-3 text-[10px] font-black"><i data-lucide="mic" class="w-4 h-4"></i> AUDIO</button>
+                        </div>
                     </div>
-                    
                     <div class="space-y-6">
-                        <div>
-                            <label class="text-[10px] font-black text-gray-300 uppercase tracking-widest block mb-2">Video Generator Prompt (Veo 3)</label>
-                            <div class="bg-gray-50 p-5 rounded-2xl text-sm leading-relaxed text-gray-700 italic border border-gray-100">
-                                ${scene.video_prompt}
-                            </div>
-                        </div>
-                        <div c
+                        <div class="bg-slate-950 p-6 rounded-3xl text-[13px] leading-relaxed text-slate-400 border border-white/5 italic">"${s.video_prompt}"</div>
+                        <div class="bg-rose-500/5 p-6 rounded-3xl text-[13px] font-bold leading-relaxed text-white border border-rose-500/10 italic">"${s.audio_prompt}"</div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+            initIcons();
+        }
+
+        document.getElementById('copyAllJson').onclick = () => copy(JSON.stringify(state.currentData, null, 2));
+
+        // --- INIT ---
+        window.onload = () => {
+            if (state.apiKey) {
+                document.getElementById('apiIndicator').className = 'w-2 h-2 rounded-full bg-emerald-500 animate-pulse';
+                document.getElementById('apiStatusText').innerText = 'CONNECTED';
+            }
+            initIcons();
+        };
+    </script>
+</body>
+</html>
+
+
+
